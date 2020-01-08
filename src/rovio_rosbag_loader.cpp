@@ -36,6 +36,7 @@
 #include <Eigen/StdVector>
 #include "rovio/RovioFilter.hpp"
 #include "rovio/RovioNode.hpp"
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
@@ -140,7 +141,14 @@ int main(int argc, char** argv){
   facet->format("%Y-%m-%d-%H-%M-%S");
   stream.imbue(std::locale(std::locale::classic(), facet));
   stream << ros::Time::now().toBoost() << "_" << nMax_ << "_" << nLevels_ << "_" << patchSize_ << "_" << nCam_  << "_" << nPose_;
-  std::string filename_out = file_path + "/rovio/" + stream.str();
+  
+  std::string dir_out = file_path + "/rovio";
+  boost::filesystem::path direc{ dir_out };
+  if (boost::filesystem::create_directory(dir_out)){
+    std::cout << "Creating directory " << dir_out << "." << std::endl;
+  }
+
+  std::string filename_out = dir_out + "/" + stream.str();
   nh_private.param("filename_out", filename_out, filename_out);
   std::string rosbag_filename_out = filename_out + ".bag";
   std::string info_filename_out = filename_out + ".info";
